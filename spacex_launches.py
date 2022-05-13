@@ -2,23 +2,46 @@ import requests
 from pprint import pprint
 
 # Retrieving data from the SpaceX API
-response = requests.get('https://api.spacexdata.com/v4/launches')
+def data_extraction(api_endpoints):
 
-data = response.json()
+    data = []
 
-launches = []
+    for endpoint in api_endpoints:
+        # Data extraction
+        response = requests.get(endpoint).json()
+        # Naming the structure (e.g. 'launches')
+        endpoint_name = endpoint.split("/")[-1]
 
-for index in range(len(data)):
+        dict_ = {endpoint_name : response}
 
-    launch = {
-        "launched_at" : data[index]['date_local'],
-        "flight_number" : data[index]['flight_number'],
-        "launch_id" : data[index]['id'],
-        "launch_name" : data[index]['name'],
-        "rocket_id" : data[index]['rocket'],
-        "failure_struct" : data[index]['failures']
-    }
+        data.append(dict_)
+    
+    return data
 
-    launches.append(launch)
+api_endpoints = [
+    'https://api.spacexdata.com/v4/launches/latest'#, For testing
+    #'https://api.spacexdata.com/v4/launches',
+    #'https://api.spacexdata.com/v4/rockets'
+    ]
 
-print(launches)
+data = data_extraction(api_endpoints)
+
+launches_set = []
+
+# Building a list for Launches. Not a function yet.
+for endpoint_name in data:
+    
+    if "".join(endpoint_name) == "latest":
+
+        launch = {
+            "launched_at" : endpoint_name["latest"]['date_local'],
+            "flight_number" : endpoint_name["latest"]['flight_number'],
+            "launch_id" : endpoint_name["latest"]['id'],
+            "launch_name" : endpoint_name["latest"]['name'],
+            "rocket_id" : endpoint_name["latest"]['rocket'],
+            "failure_struct" : endpoint_name["latest"]['failures']
+            }
+
+    launches_set.append(launch)
+
+print(launches_set)
