@@ -4,7 +4,7 @@ from pprint import pprint
 # Retrieving data from the SpaceX API
 def data_extraction(api_endpoints):
 
-    data = []
+    data = {}
 
     for endpoint in api_endpoints:
         # Data extraction
@@ -12,36 +12,51 @@ def data_extraction(api_endpoints):
         # Naming the structure (e.g. 'launches')
         endpoint_name = endpoint.split("/")[-1]
 
-        dict_ = {endpoint_name : response}
-
-        data.append(dict_)
+        data[endpoint_name] = response
     
     return data
 
+# API Endpoints
 api_endpoints = [
-    'https://api.spacexdata.com/v4/launches/latest'#, For testing
-    #'https://api.spacexdata.com/v4/launches',
-    #'https://api.spacexdata.com/v4/rockets'
+    'https://api.spacexdata.com/v4/launches',
+    'https://api.spacexdata.com/v4/rockets',
+    'https://api.spacexdata.com/v4/launches/latest' # To be excluded.
     ]
 
-data = data_extraction(api_endpoints)
+# Extract data for a specific endpoint.
+def endpoint_data(endpoint_name):
 
-launches_set = []
+    endpoint_data = data_extraction(api_endpoints)[endpoint_name]
 
-# Building a list for Launches. Not a function yet.
-for endpoint_name in data:
+    return endpoint_data
+
+# Define raw data for Launches. It may not be necessary (?)
+launches_raw_data = endpoint_data('launches')
+
+# Transform Launches data.
+def launches_data(launches_raw_data):
+
+    launches_data_transformed = []
+
+    for d in launches_raw_data:
+        
+        launches_dataset = {
+            "launched_at" : d['date_local'],
+            "flight_number" : d['flight_number'],
+            "launch_id" : d['id'],
+            "launch_name" : d['name'],
+            "rocket_id" : d['rocket'],
+            "failure_struct" : d['failures']
+        }
+
+        launches_data_transformed.append(launches_dataset)
     
-    if "".join(endpoint_name) == "latest":
+    return launches_data_transformed
 
-        launch = {
-            "launched_at" : endpoint_name["latest"]['date_local'],
-            "flight_number" : endpoint_name["latest"]['flight_number'],
-            "launch_id" : endpoint_name["latest"]['id'],
-            "launch_name" : endpoint_name["latest"]['name'],
-            "rocket_id" : endpoint_name["latest"]['rocket'],
-            "failure_struct" : endpoint_name["latest"]['failures']
-            }
+launches_dataset = launches_data(launches_raw_data)
 
-    launches_set.append(launch)
+pprint(launches_dataset)
 
-print(launches_set)
+# rockets_raw_data = endpoint_data('rockets')
+
+# latest_raw_data = endpoint_data('latest') # To be excluded.
