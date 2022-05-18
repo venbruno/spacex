@@ -19,8 +19,7 @@ def data_extraction(api_endpoints):
 # API Endpoints
 api_endpoints = [
     'https://api.spacexdata.com/v4/launches',
-    'https://api.spacexdata.com/v4/rockets',
-    'https://api.spacexdata.com/v4/launches/latest' # To be excluded.
+    'https://api.spacexdata.com/v4/rockets'
     ]
 
 # Extract data for a specific endpoint.
@@ -30,7 +29,7 @@ def endpoint_data(endpoint_name):
 
     return endpoint_data
 
-# Define raw data for Launches. It may not be necessary (?)
+# Define raw data for Launches.
 launches_raw_data = endpoint_data('launches')
 
 # Transform Launches data.
@@ -55,8 +54,35 @@ def launches_data(launches_raw_data):
 
 launches_dataset = launches_data(launches_raw_data)
 
-pprint(launches_dataset)
+# pprint(launches_dataset)
 
-# rockets_raw_data = endpoint_data('rockets')
+# Define raw data for Rockets.
+rockets_raw_data = endpoint_data('rockets')
 
-# latest_raw_data = endpoint_data('latest') # To be excluded.
+# Transform Rockets data.
+def rockets_data(rockets_raw_data):
+
+    rockets_data_transformed = []
+
+    for d in rockets_raw_data:
+        
+        rockets_dataset = {
+            "rocket_id" : d['id'],
+            "rocket_name" : d['name'],
+            "is_active" : d['active'],
+            "cost_per_launch" : d['cost_per_launch'],
+            "diameter_meters" : d['diameter']['meters'],
+            "height_meters" : d['height']['meters'],
+            "mass_kg" : d['mass']['kg'],
+            "engine_type" : d['engines']['type'],
+            "first_flight_date" : d['first_flight'],
+            "rocket_wikipedia_url" : d['wikipedia']
+        }
+
+        rockets_data_transformed.append(rockets_dataset)
+    
+    return rockets_data_transformed
+
+rockets_dataset = rockets_data(rockets_raw_data)
+
+pprint(rockets_dataset)
