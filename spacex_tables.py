@@ -1,4 +1,19 @@
+import dotenv
+import os
 import psycopg2
+
+dotenv.load_dotenv()
+
+# Connect to PostgreSQL Platform
+db = psycopg2.connect(
+    database=os.getenv('POSTGRES_DB'),
+    user=os.getenv('POSTGRES_USER'),
+    host="localhost",
+    password=os.getenv('POSTGRES_PASSWORD')
+)
+
+# Get Cursor
+cur = db.cursor()
 
 def create_tables():
 
@@ -23,7 +38,7 @@ def create_tables():
         CREATE TABLE rockets (
             rocket_id VARCHAR(255) PRIMARY KEY NOT NULL,
             rocket_name VARCHAR(255),
-            is_active BOOLEAN
+            is_active BOOLEAN,
             engine_type VARCHAR(255),
             first_flight_date DATE,
             diameter_meters INTEGER,
@@ -35,22 +50,11 @@ def create_tables():
         """
     )
 
-    # Establishing the connection with the PosgresSQL database (spacex_database)
-    conn = psycopg2.connect(
-        database = "POSTGRES_DB",
-        user = "POSTGRES_USER",
-        password = "POSTGRES_PASSWORD",
-        host = "127.0.0.1",
-        port = "5432"
-    )
-
-    cur = conn.cursor()
-
     for command in commands:
         cur.execute(command)
 
     # Commit the changes
-    conn.commit()
+    db.commit()
 
     # Close the communication with the PostgreSQL database
     cur.close()
