@@ -1,4 +1,5 @@
 import requests
+# For development only. Not required in production.
 from pprint import pprint
 
 # Retrieving data from the SpaceX API
