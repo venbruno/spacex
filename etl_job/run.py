@@ -2,6 +2,7 @@ from pprint import pprint
 
 from extract.extract import endpoint_data
 from transform.transform import transform_data
+from load.load import insert_data
 
 if __name__ == "__main__":
     
@@ -11,4 +12,7 @@ if __name__ == "__main__":
     # Transforming data.
     transformed_launches, transformed_rockets = transform_data(launches, rockets)
 
-    pprint(transformed_rockets)
+    # Inserting data into tables.
+    insert_launches, insert_rockets = insert_data(transformed_launches, transformed_rockets)
+
+pprint(insert_launches)
